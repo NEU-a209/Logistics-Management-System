@@ -2,7 +2,6 @@
 // Created by Kalen Suen on 2023/12/4.
 //
 #include <stdio.h>
-//#include 
 /*主界面
 添加货物
 查看货物，
@@ -21,8 +20,7 @@ typedef struct
     
 } goods;*/
 
-int main(void)
-{
+int main(void) {
     int operation1;
     printf("欢迎来到物流信息管理系统……\n");
     printf("1 添加货物\n");
@@ -32,7 +30,8 @@ int main(void)
     printf("5 \n");
     printf("请选择需要的操作：\n");
 
-    scanf("%d",&operation1);
+    scanf("%d", &operation1);
+}
 /*
     switch(operation1)
     {
