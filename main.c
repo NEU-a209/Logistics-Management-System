@@ -4,5 +4,5 @@
 #include "stdio.h"
 
 int main() {
-    printf("Goodbye World");
+    printf("goodbye World");
 }
