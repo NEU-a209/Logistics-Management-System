@@ -114,15 +114,17 @@ void printAllRepositories() {
 }
 
 int addItem(struct Item item) {
-
+    return currentItemIndex;
 }
 
 int removeItem(struct Item *item) {
-
+    return SUCCEEDED;
 }
 
 int removeItemByIndex(int itemIndex) {
-
+    if (itemIndex > currentItemIndex)
+        return ERR_NOT_FOUND;
+    return SUCCEEDED;
 }
 
 struct Item *getItemByIndex(int itemIndex) {
@@ -130,15 +132,17 @@ struct Item *getItemByIndex(int itemIndex) {
 }
 
 int addRepository(struct Repository repository) {
-
+    return SUCCEEDED;
 }
 
 int removeRepository(struct Repository *repository) {
-
+    return SUCCEEDED;
 }
 
 int removeRepositoryByIndex(int repositoryIndex) {
-
+    if (repositoryIndex > currentRepositoryIndex)
+        return ERR_NOT_FOUND;
+    return SUCCEEDED;
 }
 
 struct Repository *getRepositoryByIndex(int repositoryIndex) {
@@ -149,5 +153,6 @@ void pauseProgram() {
     if (SHOW_INSTRUCTIONS_ON_PAUSE)
         printf("按任意键继续...");
 
+    getchar();
     getchar();
 }
