@@ -1,5 +1,24 @@
 # ninja log v5
-0	46	1701699668446723720	CMakeFiles/logistics_management_system.dir/main.c.o	152d1b80438cf963
-46	71	1701699668471952972	logistics_management_system	742976582590bc62
 0	168	1701700473526388874	CMakeFiles/logistics_management_system.dir/main.c.o	152d1b80438cf963
 168	252	1701700473609494161	logistics_management_system	742976582590bc62
+1	162	1701780586441665325	CMakeFiles/logistics_management_system.dir/item.c.o	595755435326c3f9
+1	162	1701780586441665117	CMakeFiles/logistics_management_system.dir/repository.c.o	df08c29067f60bb7
+1	154	1701780621938528672	CMakeFiles/logistics_management_system.dir/repository.c.o	df08c29067f60bb7
+0	180	1701780621966245808	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+0	38	1701780741175913637	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+0	18	1701780772721513991	CMakeFiles/logistics_management_system.dir/item.c.o	595755435326c3f9
+0	19	1701780772721521032	CMakeFiles/logistics_management_system.dir/repository.c.o	df08c29067f60bb7
+19	45	1701780772747683168	logistics_management_system	99c1ef96eb1cc83c
+1	29	1701780846765388604	CMakeFiles/logistics_management_system.dir/repository.c.o	df08c29067f60bb7
+0	38	1701780846774364858	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+38	65	1701780846800151661	logistics_management_system	99c1ef96eb1cc83c
+0	36	1701780917918261393	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+36	63	1701780917944088112	logistics_management_system	99c1ef96eb1cc83c
+1	197	1701780979926294966	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+197	225	1701780979954020561	logistics_management_system	99c1ef96eb1cc83c
+1	30	1701781004380421495	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+30	72	1701781004423033055	logistics_management_system	99c1ef96eb1cc83c
+0	36	1701781037942717124	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+36	62	1701781037968331218	logistics_management_system	99c1ef96eb1cc83c
+0	30	1701781046370234609	CMakeFiles/logistics_management_system.dir/server.c.o	1a9d3e438ec16ee3
+30	54	1701781046395424494	logistics_management_system	99c1ef96eb1cc83c
