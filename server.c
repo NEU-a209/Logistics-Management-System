@@ -18,6 +18,7 @@
 #include "server.h"
 #include "item.h"
 #include "repository.h"
+#include "globalDeclarations.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@ struct Repository repositories[MAX_REPOSITORY_NUM];
 int currentItemIndex = INITIAL_INDEX;
 int currentRepositoryIndex = INITIAL_INDEX;
 
+time_t timeStamp = NON_REALISTIC_TIMESTAMP;
 
 int main(void) {
     bool isExitTriggered = false;
@@ -40,7 +42,7 @@ int main(void) {
         printMenu();
 
         int operation;
-        scanf("%d", &operation); // NOLINT(*-err34-c)
+        inputInteger(&operation);
 
         struct Item item;
         struct Repository repository;
@@ -53,17 +55,17 @@ int main(void) {
 
         switch (operation) {
             case ADD_ITEM:
-                item = constructItem();
+                item = constructItem(timeStamp);
                 itemIndex = addItem(item);
                 break;
-            case REMOVE_ITEM:
-                scanf("%d", &itemIndex); // NOLINT(*-err34-c)
+            case DELETE_ITEM:
+                inputInteger(&itemIndex);
                 itemPointer = getItemByIndex(itemIndex);
-                removeItem(itemPointer);
+                deleteItem(itemPointer);
                 break;
             case MODIFY_ITEM:
-                scanf("%d", &itemIndex); // NOLINT(*-err34-c)
-                item = constructItem();
+                inputInteger(&itemIndex);
+                item = constructItem(items[itemIndex].timeCreated);
                 *getItemByIndex(itemIndex) = item;
                 break;
             case PRINT_ALL_ITEMS:
@@ -73,11 +75,11 @@ int main(void) {
                 isExitTriggered = true;
                 break;
             case ADD_REPOSITORY:
-                repository = constructRepository();
+                repository = constructRepository(timeStamp);
                 repositoryIndex = addRepository(repository);
                 break;
             case REMOVE_REPOSITORY:
-                scanf("%d", &repositoryIndex); // NOLINT(*-err34-c)
+                inputInteger(&repositoryIndex);
                 repositoryPointer = getRepositoryByIndex(repositoryIndex);
                 removeRepository(repositoryPointer);
                 break;
@@ -87,6 +89,14 @@ int main(void) {
             case TOGGLE_PAUSING:
                 isPausingRequired = !isPausingRequired;
                 break;
+            case ADD_TO_REPOSITORY:
+                inputInteger(&itemIndex);
+                inputInteger(&repositoryIndex);
+                addToRepository(&items[itemIndex], &repositories[repositoryIndex]);
+                break;
+            case REMOVE_FROM_REPOSITORY:
+                inputInteger(&itemIndex);
+
             default:
                 break;
         }
@@ -106,47 +116,64 @@ void printMenu() {
 }
 
 void printAllItems() {
-
+    for (int i = 0; i < currentItemIndex; ++i) {
+        if (items[i].isRemoved) continue;
+        printItem(&items[i]);
+    }
 }
 
 void printAllRepositories() {
-
+    for (int i = 0; i < currentRepositoryIndex; ++i) {
+        if (repositories[i].isRemoved) continue;
+        printRepository(&repositories[i]);
+    }
 }
 
 int addItem(struct Item item) {
-    return currentItemIndex;
+    items[currentItemIndex++] = item;
+    return currentItemIndex - 1; // return the index of the newly-added item
 }
 
-int removeItem(struct Item *item) {
+// make an item disappear
+error_code deleteItem(struct Item *item) {
+    item->isRemoved = true;
     return SUCCEEDED;
 }
 
-int removeItemByIndex(int itemIndex) {
+error_code removeItemByIndex(int itemIndex) {
     if (itemIndex > currentItemIndex)
         return ERR_NOT_FOUND;
+
+    items[itemIndex].isRemoved = true;
+
     return SUCCEEDED;
 }
 
 struct Item *getItemByIndex(int itemIndex) {
-
+    return &items[itemIndex];
 }
 
 int addRepository(struct Repository repository) {
+    repositories[currentRepositoryIndex++] = repository;
+    return currentRepositoryIndex - 1; // return the index of the newly-added repo
+}
+
+error_code removeRepository(struct Repository *repository) {
+    repository->isRemoved = true;
     return SUCCEEDED;
 }
 
-int removeRepository(struct Repository *repository) {
-    return SUCCEEDED;
-}
-
-int removeRepositoryByIndex(int repositoryIndex) {
+error_code removeRepositoryByIndex(int repositoryIndex) {
     if (repositoryIndex > currentRepositoryIndex)
         return ERR_NOT_FOUND;
+
+    repositories[repositoryIndex].isRemoved = true;
+
     return SUCCEEDED;
 }
 
 struct Repository *getRepositoryByIndex(int repositoryIndex) {
-
+    return &repositories[repositoryIndex];
 }
 
 void pauseProgram() {
@@ -155,4 +182,53 @@ void pauseProgram() {
 
     getchar();
     getchar();
+}
+
+void inputInteger(int *num) {
+    while (true) {
+        if (scanf("%d", num) == 1) { // NOLINT(*-err34-c)
+            break;
+        } else {
+            while (getchar() != '\n');
+            printf("Invalid input. Please enter a number.\n");
+        }
+    }
+}
+
+error_code addToRepository(struct Item *item, struct Repository *repo) {
+    if (item->isRemoved || repo->isRemoved) return ERR_NOT_FOUND;
+
+    if (item->currentRepository != NULL) {
+        removeFromRepository(item);
+    }
+
+    item->currentRepository = repo;
+
+    int errorCode = addItemToRepository(item, repo);
+    if (errorCode != SUCCEEDED) return errorCode;
+
+    struct StorageInfo storageInfo = {};
+    storageInfo.repository = repo;
+    storageInfo.timeIn = timeStamp;
+    storageInfo.timeOut = NON_REALISTIC_TIMESTAMP;
+
+    addStorageInfo(item, storageInfo);
+
+    return SUCCEEDED;
+}
+
+error_code removeFromRepository(struct Item *item) {
+    if (item->isRemoved) return ERR_NOT_FOUND;
+
+    item->currentRepository->inventory[item->inventoryIndex] = NULL;
+    item->storageInfo[item->currentStorageInfoIndex - 1].timeOut = timeStamp;
+
+    item->currentRepository = NULL;
+    item->inventoryIndex = INVALID_INDEX;
+    return SUCCEEDED;
+}
+
+error_code refreshTimestamp() {
+    time(&timeStamp);
+    return SUCCEEDED;
 }

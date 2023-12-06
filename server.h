@@ -14,29 +14,30 @@
 
 #include "item.h"
 #include "repository.h"
+#include "globalDeclarations.h"
 #include <stdbool.h>
+
 
 #define INITIAL_INDEX              0
 #define DEFAULT_PAUSING_MODE       true
 #define SHOW_INSTRUCTIONS_ON_PAUSE true
+#define NON_REALISTIC_TIMESTAMP    1000
+
 
 enum OPERATION {
     ADD_ITEM,
-    REMOVE_ITEM,
+    DELETE_ITEM,
     MODIFY_ITEM,
     PRINT_ALL_ITEMS,
     ADD_REPOSITORY,
     REMOVE_REPOSITORY,
     PRINT_ALL_REPOSITORY,
     TOGGLE_PAUSING,
+    ADD_TO_REPOSITORY,
+    REMOVE_FROM_REPOSITORY,
     EXIT_PROGRAM
 };
 
-enum ERROR_CODE {
-    SUCCEEDED,
-    ERR_NOT_FOUND,
-    PRINTER_ON_FIRE
-};
 
 
 void printMenu();
@@ -47,20 +48,28 @@ void printAllRepositories();
 
 int addItem(struct Item item);
 
-int removeItem(struct Item *item);
+error_code deleteItem(struct Item *item);
 
-int removeItemByIndex(int itemIndex);
+error_code removeItemByIndex(int itemIndex);
 
 struct Item *getItemByIndex(int itemIndex);
 
 int addRepository(struct Repository repository);
 
-int removeRepository(struct Repository *repository);
+error_code removeRepository(struct Repository *repository);
 
-int removeRepositoryByIndex(int repositoryIndex);
+error_code removeRepositoryByIndex(int repositoryIndex);
 
 struct Repository *getRepositoryByIndex(int repositoryIndex);
 
 void pauseProgram();
+
+void inputInteger(int *num);
+
+error_code addToRepository(struct Item *item, struct Repository *repo);
+
+error_code removeFromRepository(struct Item *item);
+
+error_code refreshTimestamp();
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H

@@ -1,3 +1,0 @@
-/Users/kalenitid/CLionProjects/Logistics-Management-System/CMakeFiles/logistics_management_system.dir
-/Users/kalenitid/CLionProjects/Logistics-Management-System/CMakeFiles/edit_cache.dir
-/Users/kalenitid/CLionProjects/Logistics-Management-System/CMakeFiles/rebuild_cache.dir

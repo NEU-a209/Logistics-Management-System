@@ -13,33 +13,12 @@
 #ifndef LOGISTICS_MANAGEMENT_SYSTEM_ITEM_H
 #define LOGISTICS_MANAGEMENT_SYSTEM_ITEM_H
 
-#define MAX_ITEM_NUM              8192
-#define MAX_ITEM_NAME_LENGTH      64
-#define MAX_STORAGE_INFO_NUM      16
+#include "stdbool.h"
+#include "globalDeclarations.h"
 
 
-enum TYPE {
-    NORMAL,
-    FRAGILE,
-    REFRIGERATION
-};
+struct Item constructItem(time_t time);
 
-
-struct StorageInfo {
-    struct Repository *repository;
-    int timeIn;
-    int timeOut;
-};
-
-struct Item {
-    int index;
-    int timeCreated;
-    char name[MAX_ITEM_NAME_LENGTH];
-    int type;
-    struct Repository *currentRepository;
-    struct StorageInfo storageInfo[MAX_STORAGE_INFO_NUM];
-};
-
-struct Item constructItem();
+error_code addStorageInfo(struct Item *item, struct StorageInfo storageInfo);
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_ITEM_H

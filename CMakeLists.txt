@@ -8,4 +8,5 @@ add_executable(logistics_management_system server.c
         item.h
         repository.h
         repository.c
-        server.h)
+        server.h
+        globalDeclarations.h)
