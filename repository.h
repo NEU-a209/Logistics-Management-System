@@ -31,6 +31,7 @@ struct Connection {
 struct Repository {
     int index;
     time_t timeCreated;
+    int itemQuantity;
     char name[MAX_REPOSITORY_NAME_LENGTH];
     bool isRemoved;
     struct Connection connections[MAX_REPOSITORY_CONNECTIONS];

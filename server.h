@@ -48,7 +48,7 @@ void printAllRepositories();
 
 int addItem(struct Item item);
 
-error_code deleteItem(struct Item *item);
+error_code removeItem(struct Item *item);
 
 error_code removeItemByIndex(int itemIndex);
 

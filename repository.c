@@ -14,7 +14,6 @@
 #include "globalDeclarations.h"
 #include "stdio.h"
 
-
 struct Repository constructRepository(time_t timeCreated) {
     struct Repository repo = {};
 

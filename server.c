@@ -21,11 +21,8 @@
 #include "globalDeclarations.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <math.h>
 #include <time.h>
-#include <string.h>
 
 struct Item items[MAX_ITEM_NUM];
 struct Repository repositories[MAX_REPOSITORY_NUM];
@@ -60,8 +57,7 @@ int main(void) {
                 break;
             case DELETE_ITEM:
                 inputInteger(&itemIndex);
-                itemPointer = getItemByIndex(itemIndex);
-                deleteItem(itemPointer);
+                removeItemByIndex(itemIndex);
                 break;
             case MODIFY_ITEM:
                 inputInteger(&itemIndex);
@@ -80,8 +76,7 @@ int main(void) {
                 break;
             case REMOVE_REPOSITORY:
                 inputInteger(&repositoryIndex);
-                repositoryPointer = getRepositoryByIndex(repositoryIndex);
-                removeRepository(repositoryPointer);
+                removeRepositoryByIndex(repositoryIndex);
                 break;
             case PRINT_ALL_REPOSITORY:
                 printAllRepositories();
@@ -134,9 +129,19 @@ int addItem(struct Item item) {
     return currentItemIndex - 1; // return the index of the newly-added item
 }
 
-// make an item disappear
-error_code deleteItem(struct Item *item) {
+/*
+ * in order to keep each item's index unchanged
+ * and to avoid massive cost during deletion
+ * and to keep code simple
+ *
+ * when deleting an item, we only mark the item as 'deleted'
+ */
+
+error_code removeItem(struct Item *item) {
+    removeFromRepository(item);
+
     item->isRemoved = true;
+
     return SUCCEEDED;
 }
 
@@ -144,7 +149,7 @@ error_code removeItemByIndex(int itemIndex) {
     if (itemIndex > currentItemIndex)
         return ERR_NOT_FOUND;
 
-    items[itemIndex].isRemoved = true;
+    removeItem(&items[itemIndex]);
 
     return SUCCEEDED;
 }
@@ -160,6 +165,11 @@ int addRepository(struct Repository repository) {
 
 error_code removeRepository(struct Repository *repository) {
     repository->isRemoved = true;
+
+    for (int i = 0; i < repository->currentInventoryIndex; ++i) {
+        removeItem(repository->inventory[i]);
+    }
+
     return SUCCEEDED;
 }
 
@@ -167,7 +177,7 @@ error_code removeRepositoryByIndex(int repositoryIndex) {
     if (repositoryIndex > currentRepositoryIndex)
         return ERR_NOT_FOUND;
 
-    repositories[repositoryIndex].isRemoved = true;
+    removeRepository(&repositories[repositoryIndex]);
 
     return SUCCEEDED;
 }
@@ -203,6 +213,7 @@ error_code addToRepository(struct Item *item, struct Repository *repo) {
     }
 
     item->currentRepository = repo;
+    item->currentRepository->itemQuantity += 1;
 
     int errorCode = addItemToRepository(item, repo);
     if (errorCode != SUCCEEDED) return errorCode;
@@ -222,6 +233,8 @@ error_code removeFromRepository(struct Item *item) {
 
     item->currentRepository->inventory[item->inventoryIndex] = NULL;
     item->storageInfo[item->currentStorageInfoIndex - 1].timeOut = timeStamp;
+
+    item->currentRepository->itemQuantity -= 1;
 
     item->currentRepository = NULL;
     item->inventoryIndex = INVALID_INDEX;
