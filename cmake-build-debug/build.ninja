@@ -67,6 +67,12 @@ build CMakeFiles/logistics_management_system.dir/repository.c.o: C_COMPILER__log
   OBJECT_DIR = CMakeFiles/logistics_management_system.dir
   OBJECT_FILE_DIR = CMakeFiles/logistics_management_system.dir
 
+build CMakeFiles/logistics_management_system.dir/utilities.c.o: C_COMPILER__logistics_management_system_unscanned_Debug /Users/kalenitid/CLionProjects/Logistics-Management-System/utilities.c || cmake_object_order_depends_target_logistics_management_system
+  DEP_FILE = CMakeFiles/logistics_management_system.dir/utilities.c.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/logistics_management_system.dir
+  OBJECT_FILE_DIR = CMakeFiles/logistics_management_system.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target logistics_management_system
@@ -75,7 +81,7 @@ build CMakeFiles/logistics_management_system.dir/repository.c.o: C_COMPILER__log
 #############################################
 # Link the executable logistics_management_system
 
-build logistics_management_system: C_EXECUTABLE_LINKER__logistics_management_system_Debug CMakeFiles/logistics_management_system.dir/server.c.o CMakeFiles/logistics_management_system.dir/item.c.o CMakeFiles/logistics_management_system.dir/repository.c.o
+build logistics_management_system: C_EXECUTABLE_LINKER__logistics_management_system_Debug CMakeFiles/logistics_management_system.dir/server.c.o CMakeFiles/logistics_management_system.dir/item.c.o CMakeFiles/logistics_management_system.dir/repository.c.o CMakeFiles/logistics_management_system.dir/utilities.c.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.0.sdk
   OBJECT_DIR = CMakeFiles/logistics_management_system.dir
   POST_BUILD = :

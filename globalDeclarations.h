@@ -1,11 +1,20 @@
-//
-// Created by Kalen Suen on 2023/12/7.
-//
+/*
+ * THIS FILE IS CREATED UNDER THE COOPERATION OF NEU-a209.
+ * GITHUB ORGANIZATION LINK:
+ * https://github.com/NEU-a209
+ *
+ * GITHUB REPOSITORY LINK:
+ * https://github.com/NEU-a209/Logistics-Management-System
+ *
+ * Created by Kalen Suen on 2023/12/06.
+ */
+
 
 #ifndef LOGISTICS_MANAGEMENT_SYSTEM_GLOBAL_DECLARATIONS_H
 #define LOGISTICS_MANAGEMENT_SYSTEM_GLOBAL_DECLARATIONS_H
 
 #include "time.h"
+#include "stdbool.h"
 
 #define MAX_ITEM_NUM              8192
 #define MAX_ITEM_NAME_LENGTH      64
@@ -13,7 +22,7 @@
 
 #define INVALID_INDEX (-1)
 
-#define error_code int
+#define error_code char
 
 enum TYPE {
     NORMAL,
