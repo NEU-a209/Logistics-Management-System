@@ -46,9 +46,6 @@ int main(void) {
         struct Item item;
         struct Repository repository;
 
-        struct Item *itemPointer;
-        struct Repository *repositoryPointer;
-
         int itemIndex;
         int repositoryIndex;
 
@@ -89,7 +86,7 @@ int main(void) {
             case ADD_TO_REPOSITORY:
                 inputInteger(&itemIndex);
                 inputInteger(&repositoryIndex);
-                addToRepository(&items[itemIndex], &repositories[repositoryIndex]);
+                addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex));
                 break;
             case REMOVE_FROM_REPOSITORY:
                 inputInteger(&itemIndex);
