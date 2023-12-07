@@ -44,7 +44,7 @@ struct Repository constructRepository(time_t time);
 
 void printRepository(struct Repository *repository);
 
-int addItemToRepository(struct Item *item, struct Repository *repo);
+error_code addItemToRepository(struct Item *item, struct Repository *repo);
 
 void printInventory(struct Repository *repository);
 

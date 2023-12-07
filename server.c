@@ -215,7 +215,7 @@ error_code addToRepository(struct Item *item, struct Repository *repo) {
     item->currentRepository = repo;
     item->currentRepository->itemQuantity += 1;
 
-    int errorCode = addItemToRepository(item, repo);
+    error_code errorCode = addItemToRepository(item, repo);
     if (errorCode != SUCCEEDED) return errorCode;
 
     struct StorageInfo storageInfo = {};

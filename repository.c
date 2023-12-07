@@ -12,7 +12,6 @@
 
 #include "repository.h"
 #include "globalDeclarations.h"
-#include "stdio.h"
 
 struct Repository constructRepository(time_t timeCreated) {
     struct Repository repo = {};
@@ -30,7 +29,7 @@ void printRepository(struct Repository *repository) {
     // print info about repository
 }
 
-int addItemToRepository(struct Item *item, struct Repository *repository) {
+error_code addItemToRepository(struct Item *item, struct Repository *repository) {
     if (repository->currentInventoryIndex == MAX_INVENTORY_SIZE) return ERR_DATA_OVERFLOW;
 
     repository->inventory[repository->currentInventoryIndex++] = item;

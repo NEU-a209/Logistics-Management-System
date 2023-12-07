@@ -17,8 +17,8 @@
 #include "ctype.h"
 #include "stdlib.h"
 
-error_code addItemToDictionaryTree(const struct Item *item, struct DictionaryTree *dictionaryTree) {
-    for (int i = 0; i < MAX_ITEM_NAME_LENGTH, item->name[i] != '\0'; ++i) {
+error_code addItemToDictionaryTree(struct Item *item, struct DictionaryTree *dictionaryTree) {
+    for (int i = 0; i < MAX_ITEM_NAME_LENGTH && item->name[i] != '\0'; ++i) {
         int index = asciiToDictionaryTreeIndex(item->name[i]);
         if (dictionaryTree->subTrees[index]) {
             dictionaryTree = dictionaryTree->subTrees[index];
@@ -40,7 +40,7 @@ error_code addItemToDictionaryTree(const struct Item *item, struct DictionaryTre
 }
 
 struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *dictionaryTree) {
-    for (int i = 0; i < MAX_ITEM_NAME_LENGTH, name[i] != '\0'; ++i) {
+    for (int i = 0; i < MAX_ITEM_NAME_LENGTH && name[i] != '\0'; ++i) {
         int index = asciiToDictionaryTreeIndex(name[i]);
         if (dictionaryTree->subTrees[index] == NULL)
             return (struct DictionaryTree *) NULL;
@@ -52,7 +52,7 @@ struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *
 int asciiToDictionaryTreeIndex(char ascii) {
     if (isdigit(ascii)) return ascii - '0';
     if (ascii == ' ') return 37;
-    if (isupper(ascii)) tolower(ascii);
+    if (isupper(ascii)) ascii = (char) tolower(ascii);
     return ascii - 'a' + 10;
 }
 

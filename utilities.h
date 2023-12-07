@@ -20,7 +20,7 @@ struct DictionaryTree {
     struct DictionaryTree *subTrees[38];
 };
 
-error_code addItemToDictionaryTree(const struct Item *item, struct DictionaryTree *dictionaryTree);
+error_code addItemToDictionaryTree(struct Item *item, struct DictionaryTree *dictionaryTree);
 
 struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *dictionaryTree);
 

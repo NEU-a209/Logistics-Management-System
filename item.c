@@ -17,7 +17,7 @@ struct Item constructItem(time_t timeCreated) {
     struct Item item = {};
 
     // inquire user to input info here
-    // and to construct a item object
+    // and to construct an item object
 
     return item;
 }
