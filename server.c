@@ -36,6 +36,8 @@ int main(void) {
     bool isExitTriggered = false;
     bool isPausingRequired = DEFAULT_PAUSING_MODE;
     while (!isExitTriggered) {
+        refreshTimestamp();
+
         printMenu();
 
         int operation;
