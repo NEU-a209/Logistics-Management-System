@@ -27,6 +27,8 @@ void printItem(struct Item *item) {
         return;
     }
     // print info about item
+
+
 }
 
 error_code addStorageInfo(struct Item *item, struct StorageInfo storageInfo) {
