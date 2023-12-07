@@ -51,9 +51,11 @@ struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *
 
 int asciiToDictionaryTreeIndex(char ascii) {
     if (isdigit(ascii)) return ascii - '0';
-    if (ascii == ' ') return 37;
-    if (isupper(ascii)) ascii = (char) tolower(ascii);
-    return ascii - 'a' + 10;
+    else if (ascii == ' ') return 37;
+    else if (isupper(ascii)) {
+        ascii = (char) tolower(ascii);
+        return ascii - 'a' + 10;
+    }
 }
 
 void printTimestamp(time_t time) {
