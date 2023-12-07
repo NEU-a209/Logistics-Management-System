@@ -100,13 +100,13 @@ int main(void) {
 }
 
 void printMenu() {
-    printf("ç‰©æµä¿¡æ¯ç®¡ç†ç³»ç»Ÿ\n");
-    printf("1: æ·»åŠ è´§ç‰©\n");
-    printf("2: åˆ é™¤è´§ç‰©\n");
-    printf("3: ä¿®æ”¹è´§ç‰©\n");
-    printf("4: æŸ¥çœ‹æ‰€æœ‰è´§ç‰©\n");
-    printf("5: é€€å‡ºç¨‹åº\n");
-    printf("è¯·é€‰æ‹©éœ€è¦çš„æ“ä½œï¼š");
+    printf("ÎïÁ÷ĞÅÏ¢¹ÜÀíÏµÍ³\n");
+    printf("1:  Ìí¼Ó»õÎï\n");
+    printf("2: É¾³ı»õÎï\n");
+    printf("3: ĞŞ¸Ä»õÎï\n");
+    printf("4: ²é¿´ËùÓĞ»õÎï\n");
+    printf("5: ÍË³ö³ÌĞò\n");
+    printf("ÇëÑ¡ÔñĞèÒªµÄ²Ù×÷£º");
 }
 
 void printAllItems() {
@@ -187,7 +187,7 @@ struct Repository *getRepositoryByIndex(int repositoryIndex) {
 
 void pauseProgram() {
     if (SHOW_INSTRUCTIONS_ON_PAUSE)
-        printf("æŒ‰ä»»æ„é”®ç»§ç»­...");
+        printf("°´ÈÎÒâ¼ü¼ÌĞø...");
 
     getchar();
     getchar();
