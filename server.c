@@ -101,7 +101,7 @@ int main(void) {
 
 void printMenu() {
     printf("物流信息管理系统\n");
-    printf("0:  添加货物\n");
+    printf("0: 添加货物\n");
     printf("1: 删除货物\n");
     printf("2: 修改货物\n");
     printf("3: 查看所有货物\n");
@@ -110,9 +110,10 @@ void printMenu() {
 }
 
 void printAllItems() {
-    printf("\n名称      编号   类型   价格\n\n");
+    printf("\n序号 名称       编号   类型   价格\n\n");
     for (int i = 0; i < currentItemIndex; ++i) {
         if (items[i].isRemoved) continue;
+        printf("%d   ",i);
         printItem(&items[i]);
     }
     printf("共%d条结果\n\n",currentItemIndex);
