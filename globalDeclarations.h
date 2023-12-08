@@ -50,6 +50,7 @@ struct Item {
     time_t timeCreated;
     char name[MAX_ITEM_NAME_LENGTH];
     int type;
+    int price;
     bool isRemoved;
     struct Repository *currentRepository;
     struct StorageInfo storageInfo[MAX_STORAGE_INFO_NUM];

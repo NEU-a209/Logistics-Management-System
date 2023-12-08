@@ -100,20 +100,22 @@ int main(void) {
 }
 
 void printMenu() {
-    printf("ÎïÁ÷ĞÅÏ¢¹ÜÀíÏµÍ³\n");
-    printf("1:  Ìí¼Ó»õÎï\n");
-    printf("2: É¾³ı»õÎï\n");
-    printf("3: ĞŞ¸Ä»õÎï\n");
-    printf("4: ²é¿´ËùÓĞ»õÎï\n");
-    printf("5: ÍË³ö³ÌĞò\n");
-    printf("ÇëÑ¡ÔñĞèÒªµÄ²Ù×÷£º");
+    printf("ç‰©æµä¿¡æ¯ç®¡ç†ç³»ç»Ÿ\n");
+    printf("0:  æ·»åŠ è´§ç‰©\n");
+    printf("1: åˆ é™¤è´§ç‰©\n");
+    printf("2: ä¿®æ”¹è´§ç‰©\n");
+    printf("3: æŸ¥çœ‹æ‰€æœ‰è´§ç‰©\n");
+    printf("4: é€€å‡ºç¨‹åº\n");
+    printf("è¯·é€‰æ‹©éœ€è¦çš„æ“ä½œï¼š");
 }
 
 void printAllItems() {
+    printf("\nåç§°      ç¼–å·   ç±»å‹   ä»·æ ¼\n\n");
     for (int i = 0; i < currentItemIndex; ++i) {
         if (items[i].isRemoved) continue;
         printItem(&items[i]);
     }
+    printf("å…±%dæ¡ç»“æœ\n\n",currentItemIndex);
 }
 
 void printAllRepositories() {
@@ -187,7 +189,7 @@ struct Repository *getRepositoryByIndex(int repositoryIndex) {
 
 void pauseProgram() {
     if (SHOW_INSTRUCTIONS_ON_PAUSE)
-        printf("°´ÈÎÒâ¼ü¼ÌĞø...");
+        printf("æŒ‰ä»»æ„é”®ç»§ç»­...");
 
     getchar();
     getchar();

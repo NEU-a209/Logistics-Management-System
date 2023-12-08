@@ -10,6 +10,7 @@
  */
 
 
+#include <stdio.h>
 #include "item.h"
 #include "globalDeclarations.h"
 
@@ -26,7 +27,7 @@ void printItem(struct Item *item) {
     if (item->isRemoved) {
         return;
     }
-    // print info about item
+    printf("%-8s%-5d%-5d%-5d\n\n",item->name,item->index,item->type,item->price);
 
 
 }
