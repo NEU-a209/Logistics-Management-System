@@ -23,24 +23,58 @@
 #define SHOW_INSTRUCTIONS_ON_PAUSE true
 #define NON_REALISTIC_TIMESTAMP    1000
 
+enum MANU_INDEX {
+    MAIN,
+    ITEM,
+    REPOSITORY,
+    ORDER,
+    EXIT
+};
 
-enum OPERATION {
+enum MAIN_MANU_OPERATIONS {
+    ITEM_MANAGEMENT,
+    REPOSITORY_MANAGEMENT,
+    ORDER_MANAGEMENT,
+    EXIT_PROGRAM,
+};
+
+enum ITEM_MANAGEMENT {
     ADD_ITEM,
     DELETE_ITEM,
     MODIFY_ITEM,
+    ADD_TO_REPOSITORY,
     PRINT_ALL_ITEMS,
+    RETURN_FROM_ITEM
+};
+
+enum REPOSITORY_MANAGEMENT {
     ADD_REPOSITORY,
     REMOVE_REPOSITORY,
     PRINT_ALL_REPOSITORY,
-    TOGGLE_PAUSING,
-    ADD_TO_REPOSITORY,
     REMOVE_FROM_REPOSITORY,
-    EXIT_PROGRAM
+    RETURN_FROM_REPOSITORY
 };
 
 
+void printHeader();
 
-void printMenu();
+void clearScreen();
+
+void login();
+
+void printMainMenu();
+
+void printItemMenu();
+
+void printRepositoryMenu();
+
+int mainMenu();
+
+int itemMenu();
+
+int repositoryMenu();
+
+int orderMenu();
 
 void printAllItems();
 
@@ -64,12 +98,16 @@ struct Repository *getRepositoryByIndex(int repositoryIndex);
 
 void pauseProgram();
 
-void inputInteger(int *num);
-
 error_code addToRepository(struct Item *item, struct Repository *repo);
 
 error_code removeFromRepository(struct Item *item);
 
 error_code refreshTimestamp();
+
+error_code saveData();
+
+void clearScreen();
+
+error_code loadData();
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H

@@ -19,111 +19,249 @@
 #include "item.h"
 #include "repository.h"
 #include "globalDeclarations.h"
+#include "utilities.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
+#include <stdlib.h>
 
 struct Item items[MAX_ITEM_NUM];
 struct Repository repositories[MAX_REPOSITORY_NUM];
 
-int currentItemIndex = INITIAL_INDEX;
+int currentItemIndex = 2;
 int currentRepositoryIndex = INITIAL_INDEX;
 
 time_t timeStamp = NON_REALISTIC_TIMESTAMP;
 
 int main(void) {
+    // login();
+
+    int currentMenuIndex = MAIN;
+
     bool isExitTriggered = false;
-    bool isPausingRequired = DEFAULT_PAUSING_MODE;
     while (!isExitTriggered) {
         refreshTimestamp();
 
-        printMenu();
-
-        int operation;
-        inputInteger(&operation);
-
-        struct Item item;
-        struct Repository repository;
-
-        int itemIndex;
-        int repositoryIndex;
-
-        switch (operation) {
-            case ADD_ITEM:
-                item = constructItem(timeStamp);
-                itemIndex = addItem(item);
+        switch (currentMenuIndex) {
+            case MAIN:
+                currentMenuIndex = mainMenu();
                 break;
-            case DELETE_ITEM:
-                inputInteger(&itemIndex);
-                removeItemByIndex(itemIndex);
+            case ITEM:
+                currentMenuIndex = itemMenu();
                 break;
-            case MODIFY_ITEM:
-                inputInteger(&itemIndex);
-                item = constructItem(items[itemIndex].timeCreated);
-                *getItemByIndex(itemIndex) = item;
+            case REPOSITORY:
+                currentMenuIndex = repositoryMenu();
                 break;
-            case PRINT_ALL_ITEMS:
-                printAllItems();
-                break;
-            case EXIT_PROGRAM:
-                isExitTriggered = true;
-                break;
-            case ADD_REPOSITORY:
-                repository = constructRepository(timeStamp);
-                repositoryIndex = addRepository(repository);
-                break;
-            case REMOVE_REPOSITORY:
-                inputInteger(&repositoryIndex);
-                removeRepositoryByIndex(repositoryIndex);
-                break;
-            case PRINT_ALL_REPOSITORY:
-                printAllRepositories();
-                break;
-            case TOGGLE_PAUSING:
-                isPausingRequired = !isPausingRequired;
-                break;
-            case ADD_TO_REPOSITORY:
-                inputInteger(&itemIndex);
-                inputInteger(&repositoryIndex);
-                addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex));
-                break;
-            case REMOVE_FROM_REPOSITORY:
-                inputInteger(&itemIndex);
-
-            default:
+            case ORDER:
+                currentMenuIndex = orderMenu();
                 break;
         }
-        if (isPausingRequired && !isExitTriggered) pauseProgram();
+        isExitTriggered = (currentMenuIndex == EXIT);
+
+        // if (isPausingRequired && !isExitTriggered)
     }
     return 0;
 }
 
-void printMenu() {
-    printf("物流信息管理系统\n");
-    printf("0: 添加货物\n");
-    printf("1: 删除货物\n");
-    printf("2: 修改货物\n");
-    printf("3: 查看所有货物\n");
-    printf("4: 退出程序\n");
+void printHeader() {
+    printf("        ┌--------------------------------------┐\n");
+    printf("            # Logistics Management System #      \n");
+    printf("        └--------------------------------------┘\n\n");
+}
+
+void login() {
+    char id[128] = {0};
+    char password[128] = {0};
+
+    printHeader();
+    bool isPasswordCorrect = false;
+    do {
+        printf("Account：");
+        scanf("%s", id);
+        printf("Password：");
+        scanf("%s", password);
+        if (strcmp(id, "admin") == 0 && strcmp(password, "123456") == 0) {
+            isPasswordCorrect = true;
+        } else {
+            printf("Your account name or password is wrong! \n");
+            printf("Reenter your account and password. \n");
+        }
+    } while (!isPasswordCorrect);
+    printf("\n\n\n\n\n");
+}
+
+
+int mainMenu() {
+    printMainMenu();
+
+    int operation;
+    inputInteger(&operation);
+    switch (operation) {
+        case ITEM_MANAGEMENT:
+            return ITEM;
+        case REPOSITORY_MANAGEMENT:
+            return REPOSITORY;
+        case ORDER_MANAGEMENT:
+            return ORDER;
+        case EXIT_PROGRAM:
+            return EXIT;
+        case -1:
+            saveData();
+            return MAIN;
+    }
+}
+
+int itemMenu() {
+
+    struct Item item;
+
+    int itemIndex;
+    int repositoryIndex;
+
+    printItemMenu();
+
+    int operation;
+    inputInteger(&operation);
+    switch (operation) {
+        case ADD_ITEM:
+            item = constructItem(timeStamp);
+            itemIndex = addItem(item);
+            return ITEM;
+        case DELETE_ITEM:
+            inputInteger(&itemIndex);
+            removeItemByIndex(itemIndex);
+            return ITEM;
+        case MODIFY_ITEM:
+            inputInteger(&itemIndex);
+            item = constructItem(items[itemIndex].timeCreated);
+            *getItemByIndex(itemIndex) = item;
+            return ITEM;
+        case PRINT_ALL_ITEMS:
+            printAllItems();
+            return ITEM;
+        case ADD_TO_REPOSITORY:
+            inputInteger(&itemIndex);
+            inputInteger(&repositoryIndex);
+            addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex));
+            return ITEM;
+        case RETURN_FROM_ITEM:
+            return MAIN;
+        default:
+            return MAIN;
+    }
+    pauseProgram();
+    printf("\n");
+}
+
+int repositoryMenu() {
+
+    struct Repository repository;
+
+    int repositoryIndex;
+
+    printRepositoryMenu();
+
+    int operation;
+    inputInteger(&operation);
+    switch (operation) {
+        case ADD_REPOSITORY:
+            repository = constructRepository(timeStamp);
+            repositoryIndex = addRepository(repository);
+            pauseProgram();
+            return REPOSITORY;
+        case REMOVE_REPOSITORY:
+            inputInteger(&repositoryIndex);
+            removeRepositoryByIndex(repositoryIndex);
+            pauseProgram();
+            return REPOSITORY;
+        case PRINT_ALL_REPOSITORY:
+            printAllRepositories();
+            pauseProgram();
+            return REPOSITORY;
+        case RETURN_FROM_REPOSITORY:
+            return MAIN;
+    }
+    printf("\n");
+}
+
+int orderMenu() {
+    pauseProgram();
+}
+
+void printMainMenu() {
+    printf("\n");
+    printHeader();
+    printf("        ┌-------------------------------┐\n");
+    printf("               #物流管理运输系统#\n");
+    printf("\n");
+    printf("              [0] 物品管理系统\n");
+    printf("              [1] 仓储管理系统\n");
+    printf("              [2] 订单管理系统\n");
+    printf("              [3] 退出系统\n");
+    printf("\n");
+    printf("        └-------------------------------┘\n");
+    printf("请选择需要的操作：");
+}
+
+void printRepositoryMenu() {
+    printf("\n");
+    printHeader();
+    printf("        ┌-------------------------------┐\n");
+    printf("               #物流管理运输系统#\n");
+    printf("\n");
+    printf("              [0] 增加仓库\n");
+    printf("              [1] 删除仓库\n");
+    printf("              [2] 修改仓库\n");
+    printf("              [3] 查看所有仓库\n");
+    printf("              [4] 返回主菜单\n");
+    printf("\n");
+    printf("        └-------------------------------┘\n");
+    printf("请选择需要的操作：");
+}
+
+void printItemMenu() {
+    printf("\n");
+    printHeader();
+    printf("        ┌-------------------------------┐\n");
+    printf("               #物流管理运输系统#\n");
+    printf("\n");
+    printf("              [0] 增加物品\n");
+    printf("              [1] 删除物品\n");
+    printf("              [2] 修改物品\n");
+    printf("              [3] 转移物品\n");
+    printf("              [4] 查看所有物品\n");
+    printf("              [5] 返回主菜单\n");
+    printf("\n");
+    printf("        └-------------------------------┘\n");
     printf("请选择需要的操作：");
 }
 
 void printAllItems() {
-    printf("\n序号 名称       编号   类型   价格\n\n");
+    printHeader();
+    printf("\n        ┌-------------------------------┐\n");
+    printf("         序号 名称       编号   类型   价格\n\n");
     for (int i = 0; i < currentItemIndex; ++i) {
         if (items[i].isRemoved) continue;
-        printf("%d   ",i);
+        printf("         %d   ", i);
         printItem(&items[i]);
     }
-    printf("共%d条结果\n\n",currentItemIndex);
+    printf("        └-------------------------------┘\n");
+    printf("共%d条结果\n\n", currentItemIndex);
 }
 
 void printAllRepositories() {
+    printHeader();
+    printf("\n      ┌------------------------------------┐\n");
+    printf("         序号 名称       编号   物品数量   创建时间\n\n");
     for (int i = 0; i < currentRepositoryIndex; ++i) {
         if (repositories[i].isRemoved) continue;
+        printf("%d   ", i);
         printRepository(&repositories[i]);
     }
+    printf("        └------------------------------------┘\n");
+    printf("共%d条结果\n\n", currentItemIndex);
 }
 
 int addItem(struct Item item) {
@@ -196,17 +334,6 @@ void pauseProgram() {
     getchar();
 }
 
-void inputInteger(int *num) {
-    while (true) {
-        if (scanf("%d", num) == 1) { // NOLINT(*-err34-c)
-            break;
-        } else {
-            while (getchar() != '\n');
-            printf("Invalid input. Please enter a number.\n");
-        }
-    }
-}
-
 error_code addToRepository(struct Item *item, struct Repository *repo) {
     if (item->isRemoved || repo->isRemoved) return ERR_NOT_FOUND;
 
@@ -245,5 +372,49 @@ error_code removeFromRepository(struct Item *item) {
 
 error_code refreshTimestamp() {
     time(&timeStamp);
+    return SUCCEEDED;
+}
+
+error_code saveData() {
+    FILE *file = fopen("data.dat", "w");
+    if (file == NULL) {
+        // Handle file opening error
+        perror("Error opening file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Saving items
+    fprintf(file, "%d\n", currentItemIndex);
+    for (int i = 0; i < currentItemIndex; ++i) {
+        struct Item *pItem = getItemByIndex(i);
+        fprintf(file, "%s %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity);
+    }
+
+    // Saving repositories
+    fprintf(file, "%d\n", currentRepositoryIndex);
+    for (int i = 0; i < currentRepositoryIndex; ++i) {
+        struct Repository *pRepository = getRepositoryByIndex(i);
+        // todo: implement connection function
+        fprintf(file, "%s %ld\n", pRepository->name, pRepository->timeCreated);
+    }
+
+    fclose(file);
+    return SUCCEEDED;
+}
+
+error_code loadData() {
+
+    return SUCCEEDED;
+}
+
+void clearScreen() {
+    for (int i = 0; i < 20; ++i) {
+        puts("");
+    }
+}
+
+error_code clearAllData() {
+    currentItemIndex = 0;
+    currentRepositoryIndex = 0;
     return SUCCEEDED;
 }

@@ -28,4 +28,6 @@ int asciiToDictionaryTreeIndex(char ascii);
 
 void printTimestamp(time_t time);
 
+void inputInteger(int *num);
+
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_UTILITIES_H

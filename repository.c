@@ -13,6 +13,8 @@
 #include "repository.h"
 #include "globalDeclarations.h"
 
+#include <stdio.h>
+
 struct Repository constructRepository(time_t timeCreated) {
     struct Repository repo = {};
 
@@ -26,7 +28,8 @@ void printRepository(struct Repository *repository) {
     if (repository->isRemoved) {
         return;
     }
-    // print info about repository
+    printf("         %-7s%-6d%-6d%-10ld\n\n",repository->name,repository->index,repository->itemQuantity,repository->timeCreated);
+
 }
 
 error_code addItemToRepository(struct Item *item, struct Repository *repository) {

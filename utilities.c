@@ -61,5 +61,16 @@ int asciiToDictionaryTreeIndex(char ascii) {
 void printTimestamp(time_t time) {
     struct tm *localTime = localtime(&time);
 
-    printf("当前时间: %s\n", asctime(localTime));
+    printf("Current Time: %s\n", asctime(localTime));
+}
+
+void inputInteger(int *num) {
+    while (true) {
+        if (scanf("%d", num) == 1) { // NOLINT(*-err34-c)
+            break;
+        } else {
+            while (getchar() != '\n');
+            printf("Invalid input. Please enter a number.\n");
+        }
+    }
 }

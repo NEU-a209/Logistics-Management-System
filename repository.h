@@ -23,18 +23,18 @@
 #define TYPE_NUM 3
 
 
-struct Connection {
+/*struct Connection {
     double transportationTime[TYPE_NUM];
     struct Repository *destination;
-};
+};*/
 
 struct Repository {
     int index;
-    time_t timeCreated;
-    int itemQuantity;
-    char name[MAX_REPOSITORY_NAME_LENGTH];
+    time_t timeCreated; //
+    int itemQuantity; //
+    char name[MAX_REPOSITORY_NAME_LENGTH]; //
     bool isRemoved;
-    struct Connection connections[MAX_REPOSITORY_CONNECTIONS];
+    // struct Connection connections[MAX_REPOSITORY_CONNECTIONS];
     struct Item *inventory[MAX_INVENTORY_SIZE];
     int currentInventoryIndex;
 };

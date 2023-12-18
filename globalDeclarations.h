@@ -51,9 +51,10 @@ struct Item {
     char name[MAX_ITEM_NAME_LENGTH];
     int type;
     int price;
+    int quantity;
     bool isRemoved;
     struct Repository *currentRepository;
-    struct StorageInfo storageInfo[MAX_STORAGE_INFO_NUM];
+    struct StorageInfo storageInfo[MAX_STORAGE_INFO_NUM]; // <- todo: should be changed into a linked List ***
     int currentStorageInfoIndex;
 };
 

@@ -1,3 +1,3 @@
-E:/Logistics-Management-System/cmake-build-debug/CMakeFiles/logistics_management_system.dir
-E:/Logistics-Management-System/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Logistics-Management-System/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/kalenitid/CLionProjects/Logistics-Management-System/cmake-build-debug/CMakeFiles/logistics_management_system.dir
+/Users/kalenitid/CLionProjects/Logistics-Management-System/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/kalenitid/CLionProjects/Logistics-Management-System/cmake-build-debug/CMakeFiles/rebuild_cache.dir
