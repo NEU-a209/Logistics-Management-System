@@ -28,7 +28,7 @@ void printRepository(struct Repository *repository) {
     if (repository->isRemoved) {
         return;
     }
-    printf("         %-7s%-6d%-6d%-10ld\n\n",repository->name,repository->index,repository->itemQuantity,repository->timeCreated);
+    printf("%-10s%-6d%-6d%-10ld\n\n",repository->name,repository->index,repository->itemQuantity,repository->timeCreated);
 
 }
 

@@ -22,6 +22,7 @@
 #define DEFAULT_PAUSING_MODE       true
 #define SHOW_INSTRUCTIONS_ON_PAUSE true
 #define NON_REALISTIC_TIMESTAMP    1000
+#define MAX_TOKEN_NUM              2048
 
 enum MANU_INDEX {
     MAIN,
@@ -55,10 +56,13 @@ enum REPOSITORY_MANAGEMENT {
     RETURN_FROM_REPOSITORY
 };
 
+bool verify();
 
 void printHeader();
 
 void clearScreen();
+
+void getToken();
 
 void login();
 
@@ -109,5 +113,15 @@ error_code saveData();
 void clearScreen();
 
 error_code loadData();
+
+error_code clearAllData();
+
+unsigned int customHash(const char *text);
+
+void getToken();
+
+bool verifyToken(const char *text);
+
+error_code addToken();
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H

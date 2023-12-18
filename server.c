@@ -29,14 +29,30 @@
 
 struct Item items[MAX_ITEM_NUM];
 struct Repository repositories[MAX_REPOSITORY_NUM];
+unsigned int tokens[MAX_TOKEN_NUM];
 
-int currentItemIndex = 2;
+
+int currentItemIndex = INITIAL_INDEX;
 int currentRepositoryIndex = INITIAL_INDEX;
+int currentTokenIndex = INITIAL_INDEX;
 
 time_t timeStamp = NON_REALISTIC_TIMESTAMP;
 
 int main(void) {
-    // login();
+    loadData();
+
+    /*
+    printf("1: 登陆\n2: 注册\n输入你的选择: ");
+    int operation = 0;
+    inputInteger(&operation);
+    if (operation == 1) login();
+    else if (operation == 2) {
+        getToken();
+        login();
+    }
+    puts("");
+    */
+
 
     int currentMenuIndex = MAIN;
 
@@ -62,6 +78,8 @@ int main(void) {
 
         // if (isPausingRequired && !isExitTriggered)
     }
+
+    saveData();
     return 0;
 }
 
@@ -71,22 +89,92 @@ void printHeader() {
     printf("        └--------------------------------------┘\n\n");
 }
 
+error_code addToken(const char *ch) {
+    if (currentItemIndex == MAX_TOKEN_NUM)
+        return ERR_DATA_OVERFLOW;
+    unsigned int hashedToken = customHash(ch);
+    tokens[currentTokenIndex++] = hashedToken;
+    return SUCCEEDED;
+}
+
+bool verifyToken(const char *ch) {
+    unsigned int hashToken = customHash(ch);
+    for (int i = 0; i < currentTokenIndex; ++i) {
+        if (tokens[i] == hashToken) return true;
+    }
+    return false;
+}
+
+void getToken() {
+    printHeader();
+    int num;
+    srand(time(0));   //防止伪随机数 时间复杂度
+    char node[7];     //node[6]='\0';
+    char node_[7];
+    char eng[36] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                    'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    for (int i = 0; i < 6; i++) {
+        num = rand() % 34;
+        node[i] = eng[num];  //验证码
+    }
+    node[6] = '\0';     //解决bug
+
+    printf("你的Token为:%s    ", node);
+
+    printf("请输入验你的Token:");
+    scanf("%s", node_);
+    if (strcmp(node, node_) == 0) {
+        printf("注册成功，请记住你的Token!!!\n");
+        addToken(node);
+    } else {
+        printf("注册失败!!!\n");
+    }
+}
+
+bool verify() {
+    int num;
+    srand(time(0));   //防止伪随机数 时间复杂度
+    char node[7];     //node[6]='\0';
+    char node_[7];
+    char eng[62] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                    'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
+                    'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+                    'y', 'z'};
+    for (int i = 0; i < 6; i++) {
+        num = rand() % 60;
+        node[i] = eng[num];  //验证码
+    }
+    node[6] = '\0';     //解决bug
+
+    printf("验证码为:%s    ", node);
+
+    printf("请输入验证码:");
+    scanf("%s", node_);
+    if (strcmp(node, node_) == 0) {
+        printf("验证成功!!!\n");
+        return true;
+    } else {
+        printf("验证失败!!!\n");
+        return false;
+    }
+}
+
 void login() {
-    char id[128] = {0};
-    char password[128] = {0};
+    char token[128] = {0};
 
     printHeader();
     bool isPasswordCorrect = false;
     do {
-        printf("Account：");
-        scanf("%s", id);
-        printf("Password：");
-        scanf("%s", password);
-        if (strcmp(id, "admin") == 0 && strcmp(password, "123456") == 0) {
-            isPasswordCorrect = true;
+        printf("Token：");
+        scanf("%s", token);
+
+        if (verifyToken(token)) {
+            if (verify()) {
+                isPasswordCorrect = true;
+            }
         } else {
-            printf("Your account name or password is wrong! \n");
-            printf("Reenter your account and password. \n");
+            printf("Your Token is wrong! \n");
+            printf("Reenter your Token. \n");
         }
     } while (!isPasswordCorrect);
     printf("\n\n\n\n\n");
@@ -109,6 +197,9 @@ int mainMenu() {
             return EXIT;
         case -1:
             saveData();
+            return MAIN;
+        case -2:
+            loadData();
             return MAIN;
     }
 }
@@ -253,11 +344,11 @@ void printAllItems() {
 
 void printAllRepositories() {
     printHeader();
-    printf("\n      ┌------------------------------------┐\n");
+    printf("\n        ┌------------------------------------┐\n");
     printf("         序号 名称       编号   物品数量   创建时间\n\n");
     for (int i = 0; i < currentRepositoryIndex; ++i) {
         if (repositories[i].isRemoved) continue;
-        printf("%d   ", i);
+        printf("         %d   ", i);
         printRepository(&repositories[i]);
     }
     printf("        └------------------------------------┘\n");
@@ -380,14 +471,14 @@ error_code saveData() {
     if (file == NULL) {
         // Handle file opening error
         perror("Error opening file\n");
-        exit(EXIT_FAILURE);
+        return ERR_UNABLE_TO_HANDLE;
     }
 
     // Saving items
     fprintf(file, "%d\n", currentItemIndex);
     for (int i = 0; i < currentItemIndex; ++i) {
         struct Item *pItem = getItemByIndex(i);
-        fprintf(file, "%s %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity);
+        fprintf(file, "%s %d %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity, pItem->isRemoved);
     }
 
     // Saving repositories
@@ -398,12 +489,63 @@ error_code saveData() {
         fprintf(file, "%s %ld\n", pRepository->name, pRepository->timeCreated);
     }
 
+    // Saving hashed tokens
+    fprintf(file, "%d\n", currentTokenIndex);
+    for (int i = 0; i < currentTokenIndex; ++i) {
+        fprintf(file, "%ud\n", tokens[i]);
+    }
+
     fclose(file);
     return SUCCEEDED;
 }
 
 error_code loadData() {
+    clearAllData();
 
+    FILE *file = fopen("data.dat", "r");
+    if (file == NULL) {
+        // Handle file opening error
+        perror("Error opening file\n");
+        return ERR_UNABLE_TO_HANDLE;
+    }
+
+    int numItems = 0;
+    int numRepos = 0;
+    int numTokens = 0;
+
+    // Loading items
+    fscanf(file, "%d\n", &numItems);
+    // printf("%d", numItems);
+    for (int i = 0; i < numItems; ++i) {
+        struct Item item = {};
+        fscanf(file, "%s %d %d %d\n", item.name, &item.type, &item.price, &item.quantity);
+        int isRemoved;
+        fscanf(file, "%d", &isRemoved);
+        item.isRemoved = (bool) isRemoved;
+
+        addItem(item);
+    }
+
+    // Loading repositories
+    fscanf(file, "%d\n", &numRepos);
+    for (int i = 0; i < numRepos; ++i) {
+        struct Repository repository = {};
+        // todo: implement connection function
+        fscanf(file, "%s %ld\n", repository.name, &repository.timeCreated);
+        int isRemoved;
+        fscanf(file, "%d", &isRemoved);
+        repository.isRemoved = (bool) isRemoved;
+
+        addRepository(repository);
+    }
+
+    // Loading tokens
+    fscanf(file, "%d\n", &numTokens);
+    for (int i = 0; i < numTokens; ++i) {
+        fscanf(file, "%ud\n", &tokens[currentTokenIndex++]);
+    }
+
+    fclose(file);
     return SUCCEEDED;
 }
 
@@ -414,7 +556,17 @@ void clearScreen() {
 }
 
 error_code clearAllData() {
-    currentItemIndex = 0;
-    currentRepositoryIndex = 0;
+    currentItemIndex = INITIAL_INDEX;
+    currentRepositoryIndex = INITIAL_INDEX;
+    currentTokenIndex = INITIAL_INDEX;
     return SUCCEEDED;
+}
+
+unsigned int customHash(const char *text) {
+    unsigned int hash = 0;
+    while (*text != '\0') {
+        hash = (hash * 281 ^ *text * 997) & 0xFFFFFFFF;
+        text++;
+    }
+    return hash;
 }

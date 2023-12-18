@@ -20,9 +20,9 @@ struct Item constructItem(time_t timeCreated) {
     struct Item item = {};
 
     printf("Enter the item name: ");
-    scanf("%[^\n]%*c", item.name);
+    scanf("%s", item.name);
     puts("");
-    
+
     inputInteger(&item.type);
     inputInteger(&item.price);
     inputInteger(&item.quantity);
@@ -37,7 +37,7 @@ void printItem(struct Item *item) {
     if (item->isRemoved) {
         return;
     }
-    printf("         %-7s%-6d%-6d%-6d\n\n", item->name, item->index, item->type, item->price);
+    printf("%-10s%-6d%-6d%-6d\n\n", item->name, item->index, item->type, item->price);
 
 }
 
