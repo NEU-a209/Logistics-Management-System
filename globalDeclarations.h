@@ -41,7 +41,6 @@ enum ERROR_CODE {
 struct StorageInfo {
     struct Repository *repository;
     time_t timeIn;
-    time_t timeOut;
 };
 
 struct Item {

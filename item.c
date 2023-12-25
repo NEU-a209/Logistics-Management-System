@@ -12,6 +12,7 @@
 #include "item.h"
 #include "globalDeclarations.h"
 #include "utilities.h"
+#include "repository.h"
 
 #include <stdio.h>
 
@@ -23,9 +24,18 @@ struct Item constructItem(time_t timeCreated) {
     scanf("%s", item.name);
     puts("");
 
+
+    printf("Enter the item type: ");
     inputInteger(&item.type);
+    puts("");
+
+    printf("Enter the item price: ");
     inputInteger(&item.price);
+    puts("");
+
+    printf("Enter the item quantity: ");
     inputInteger(&item.quantity);
+    puts("");
 
     // inquire user to input info here
     // and to construct an item object
@@ -37,7 +47,7 @@ void printItem(struct Item *item) {
     if (item->isRemoved) {
         return;
     }
-    printf("%-10s%-6d%-6d%-6d\n\n", item->name, item->index, item->type, item->price);
+    printf("%-10s%-6d%-6d%-6d%-8s\n\n", item->name, item->index, item->type, item->price, item->currentRepository->name);
 
 }
 

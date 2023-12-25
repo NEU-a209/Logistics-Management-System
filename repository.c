@@ -18,8 +18,8 @@
 struct Repository constructRepository(time_t timeCreated) {
     struct Repository repo = {};
 
-    // inquire user to input info here
-    // and to construct a repo object
+    printf("name:");
+    scanf("%s", repo.name);
 
     return repo;
 }

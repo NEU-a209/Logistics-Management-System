@@ -218,6 +218,11 @@ int itemMenu() {
     switch (operation) {
         case ADD_ITEM:
             item = constructItem(timeStamp);
+            int repoIndex = 0;
+            printf("Enter the item repository index: ");
+            inputInteger(&repoIndex);
+            puts("");
+            item.currentRepository = getRepositoryByIndex(repoIndex);
             itemIndex = addItem(item);
             return ITEM;
         case DELETE_ITEM:
@@ -231,10 +236,15 @@ int itemMenu() {
             return ITEM;
         case PRINT_ALL_ITEMS:
             printAllItems();
+            pauseProgram();
             return ITEM;
         case ADD_TO_REPOSITORY:
+            printf("Enter the item index to transfer: ");
             inputInteger(&itemIndex);
+            puts("");
+            printf("Enter the target repository index: ");
             inputInteger(&repositoryIndex);
+            puts("");
             addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex));
             return ITEM;
         case RETURN_FROM_ITEM:
@@ -242,8 +252,6 @@ int itemMenu() {
         default:
             return MAIN;
     }
-    pauseProgram();
-    printf("\n");
 }
 
 int repositoryMenu() {
@@ -263,12 +271,21 @@ int repositoryMenu() {
             pauseProgram();
             return REPOSITORY;
         case REMOVE_REPOSITORY:
+            printf("Enter repository index to remove: ");
             inputInteger(&repositoryIndex);
+            puts("");
             removeRepositoryByIndex(repositoryIndex);
             pauseProgram();
             return REPOSITORY;
         case PRINT_ALL_REPOSITORY:
             printAllRepositories();
+            pauseProgram();
+            return REPOSITORY;
+        case PRINT_REPOSITORY_ITEMS:
+            printf("Enter repository index to display: ");
+            inputInteger(&repositoryIndex);
+            puts("");
+            printRepositoryItems(getRepositoryByIndex(repositoryIndex));
             pauseProgram();
             return REPOSITORY;
         case RETURN_FROM_REPOSITORY:
@@ -304,8 +321,8 @@ void printRepositoryMenu() {
     printf("\n");
     printf("              [0] 增加仓库\n");
     printf("              [1] 删除仓库\n");
-    printf("              [2] 修改仓库\n");
-    printf("              [3] 查看所有仓库\n");
+    printf("              [2] 列出仓库\n");
+    printf("              [3] 查看仓库\n");
     printf("              [4] 返回主菜单\n");
     printf("\n");
     printf("        └-------------------------------┘\n");
@@ -331,6 +348,9 @@ void printItemMenu() {
 
 void printAllItems() {
     printHeader();
+
+    // todo: print the current repository index of the displayed item
+
     printf("\n        ┌-------------------------------┐\n");
     printf("         序号 名称       编号   类型   价格\n\n");
     for (int i = 0; i < currentItemIndex; ++i) {
@@ -441,7 +461,6 @@ error_code addToRepository(struct Item *item, struct Repository *repo) {
     struct StorageInfo storageInfo = {};
     storageInfo.repository = repo;
     storageInfo.timeIn = timeStamp;
-    storageInfo.timeOut = NON_REALISTIC_TIMESTAMP;
 
     addStorageInfo(item, storageInfo);
 
@@ -452,7 +471,6 @@ error_code removeFromRepository(struct Item *item) {
     if (item->isRemoved) return ERR_NOT_FOUND;
 
     item->currentRepository->inventory[item->inventoryIndex] = NULL;
-    item->storageInfo[item->currentStorageInfoIndex - 1].timeOut = timeStamp;
 
     item->currentRepository->itemQuantity -= 1;
 
@@ -474,20 +492,24 @@ error_code saveData() {
         return ERR_UNABLE_TO_HANDLE;
     }
 
-    // Saving items
-    fprintf(file, "%d\n", currentItemIndex);
-    for (int i = 0; i < currentItemIndex; ++i) {
-        struct Item *pItem = getItemByIndex(i);
-        fprintf(file, "%s %d %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity, pItem->isRemoved);
-    }
-
     // Saving repositories
     fprintf(file, "%d\n", currentRepositoryIndex);
     for (int i = 0; i < currentRepositoryIndex; ++i) {
         struct Repository *pRepository = getRepositoryByIndex(i);
         // todo: implement connection function
-        fprintf(file, "%s %ld\n", pRepository->name, pRepository->timeCreated);
+        fprintf(file, "%s %ld %d\n", pRepository->name, pRepository->timeCreated, (int) pRepository->isRemoved);
     }
+
+
+    // Saving items
+    fprintf(file, "%d\n", currentItemIndex);
+    for (int i = 0; i < currentItemIndex; ++i) {
+        struct Item *pItem = getItemByIndex(i);
+        fprintf(file, "%s %d %d %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity, pItem->isRemoved,
+                pItem->currentRepository->index);
+    }
+
+
 
     // Saving hashed tokens
     fprintf(file, "%d\n", currentTokenIndex);
@@ -513,18 +535,6 @@ error_code loadData() {
     int numRepos = 0;
     int numTokens = 0;
 
-    // Loading items
-    fscanf(file, "%d\n", &numItems);
-    // printf("%d", numItems);
-    for (int i = 0; i < numItems; ++i) {
-        struct Item item = {};
-        fscanf(file, "%s %d %d %d\n", item.name, &item.type, &item.price, &item.quantity);
-        int isRemoved;
-        fscanf(file, "%d", &isRemoved);
-        item.isRemoved = (bool) isRemoved;
-
-        addItem(item);
-    }
 
     // Loading repositories
     fscanf(file, "%d\n", &numRepos);
@@ -537,6 +547,24 @@ error_code loadData() {
         repository.isRemoved = (bool) isRemoved;
 
         addRepository(repository);
+    }
+
+    // Loading items
+    fscanf(file, "%d\n", &numItems);
+    // printf("%d", numItems);
+    for (int i = 0; i < numItems; ++i) {
+        struct Item item = {};
+        fscanf(file, "%s %d %d %d\n", item.name, &item.type, &item.price, &item.quantity);
+
+        int isRemoved;
+        fscanf(file, "%d", &isRemoved);
+        item.isRemoved = (bool) isRemoved;
+
+        int repoIndex = 0;
+        fscanf(file, "%d", &repoIndex);
+        addToRepository(&item, getRepositoryByIndex(repoIndex));
+
+        addItem(item);
     }
 
     // Loading tokens
@@ -569,4 +597,13 @@ unsigned int customHash(const char *text) {
         text++;
     }
     return hash;
+}
+
+
+// todo: add titles and stuff
+void printRepositoryItems(struct Repository *repository) {
+    for (int i = 0; i < repository->currentInventoryIndex; ++i) {
+        if (repository->inventory[i] != NULL)
+            printItem(repository->inventory[i]);
+    }
 }

@@ -52,7 +52,7 @@ enum REPOSITORY_MANAGEMENT {
     ADD_REPOSITORY,
     REMOVE_REPOSITORY,
     PRINT_ALL_REPOSITORY,
-    REMOVE_FROM_REPOSITORY,
+    PRINT_REPOSITORY_ITEMS,
     RETURN_FROM_REPOSITORY
 };
 
@@ -123,5 +123,7 @@ void getToken();
 bool verifyToken(const char *text);
 
 error_code addToken();
+
+void printRepositoryItems(struct Repository *repository);
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H
