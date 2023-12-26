@@ -112,7 +112,7 @@ void getToken() {
     char node_[7];
     char eng[36] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-                    'Q', 'R', 'S', 'T','U', 'V', 'W', 'X',
+                    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
                     'Y', 'Z', '0', '1', '2', '3', '4', '5',
                     '6', '7', '8', '9'};
     for (int i = 0; i < 6; i++) {
@@ -140,13 +140,13 @@ bool verify() {
     char node_[7];
     char eng[62] = {'A', 'B', 'C', 'D', 'E', 'F', 'G',
                     'H', 'I', 'J', 'K', 'L', 'M', 'N',
-                    'O', 'P', 'Q', 'R', 'S', 'T','U',
+                    'O', 'P', 'Q', 'R', 'S', 'T', 'U',
                     'V', 'W', 'X', 'Y', 'Z', '0', '1',
                     '2', '3', '4', '5', '6', '7', '8',
-                    '9', 'a', 'b', 'c', 'd','e', 'f',
+                    '9', 'a', 'b', 'c', 'd', 'e', 'f',
                     'g', 'h', 'i', 'j', 'k', 'l', 'm',
                     'n', 'o', 'p', 'q', 'r', 's', 't',
-                    'u', 'v', 'w', 'x','y', 'z'};
+                    'u', 'v', 'w', 'x', 'y', 'z'};
     for (int i = 0; i < 6; i++) {
         num = rand() % 60;
         node[i] = eng[num];  //验证码
@@ -229,7 +229,7 @@ int itemMenu() {
             printf("Enter the item repository index: ");
             inputInteger(&repoIndex);
             puts("");
-            item.currentRepository = getRepositoryByIndex(repoIndex);
+            addToRepository(&item, getRepositoryByIndex(repoIndex), timeStamp);
             itemIndex = addItem(item);
             return ITEM;
         case DELETE_ITEM:
@@ -252,7 +252,10 @@ int itemMenu() {
             printf("Enter the target repository index: ");
             inputInteger(&repositoryIndex);
             puts("");
-            addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex), timeStamp);
+            addToRepository(getItemByIndex(itemIndex),
+                            getRepositoryByIndex(repositoryIndex),
+                            timeStamp);
+
             return ITEM;
         case RETURN_FROM_ITEM:
             return MAIN;
@@ -275,6 +278,7 @@ int repositoryMenu() {
         case ADD_REPOSITORY:
             repository = constructRepository(timeStamp);
             repositoryIndex = addRepository(repository);
+            repository.index = repositoryIndex;
             pauseProgram();
             return REPOSITORY;
         case REMOVE_REPOSITORY:
@@ -470,11 +474,13 @@ error_code addToRepository(struct Item *item, struct Repository *repo, time_t ti
     error_code errorCode = addItemToRepository(item, repo);
     if (errorCode != SUCCEEDED) return errorCode;
 
-    struct StorageInfo storageInfo = {};
-    storageInfo.repository = repo;
-    storageInfo.timeIn = timeStamp;
+    if (time != -1) {
+        struct StorageInfo storageInfo = {};
+        storageInfo.repository = repo;
+        storageInfo.timeIn = time;
 
-    addStorageInfo(item, storageInfo);
+        addStorageInfo(item, storageInfo);
+    }
 
     return SUCCEEDED;
 }
@@ -508,10 +514,8 @@ error_code saveData() {
     fprintf(file, "%d\n", currentRepositoryIndex);
     for (int i = 0; i < currentRepositoryIndex; ++i) {
         struct Repository *pRepository = getRepositoryByIndex(i);
-        // todo: implement connection function
         fprintf(file, "%s %ld %d\n", pRepository->name, pRepository->timeCreated, (int) pRepository->isRemoved);
     }
-
 
     // Saving items
     fprintf(file, "%d\n", currentItemIndex);
@@ -519,9 +523,17 @@ error_code saveData() {
         struct Item *pItem = getItemByIndex(i);
         fprintf(file, "%s %d %d %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity, pItem->isRemoved,
                 pItem->currentRepository->index);
+
+        // Save StorageInfo linked list for each item
+        fprintf(file, "%d\n", pItem->currentStorageInfoIndex);
+        struct StorageInfoNode *storageInfoNode = pItem->storageInfoList;
+        while (storageInfoNode != NULL) {
+            fprintf(file, "%d %ld ", storageInfoNode->storageInfo.repository->index,
+                    storageInfoNode->storageInfo.timeIn);
+            storageInfoNode = storageInfoNode->next;
+        }
+        fprintf(file, "\n");
     }
-
-
 
     // Saving hashed tokens
     fprintf(file, "%d\n", currentTokenIndex);
@@ -547,42 +559,47 @@ error_code loadData() {
     int numRepos = 0;
     int numTokens = 0;
 
-
     // Loading repositories
     fscanf(file, "%d\n", &numRepos);
     for (int i = 0; i < numRepos; ++i) {
         struct Repository repository = {};
-        // todo: implement connection function
-        fscanf(file, "%s %ld\n", repository.name, &repository.timeCreated);
+        fscanf(file, "%s %ld", repository.name, &repository.timeCreated);
         int isRemoved;
         fscanf(file, "%d", &isRemoved);
         repository.isRemoved = (bool) isRemoved;
+        repository.index = i;
 
         addRepository(repository);
     }
 
     // Loading items
     fscanf(file, "%d\n", &numItems);
-    // printf("%d", numItems);
     for (int i = 0; i < numItems; ++i) {
         struct Item item = {};
-        fscanf(file, "%s %d %d %d\n", item.name, &item.type, &item.price, &item.quantity);
+        int currentRepoIndex = 0;
+        fscanf(file, "%s %d %d %d %d %d", item.name, &item.type, &item.price, &item.quantity, &item.isRemoved,
+               &currentRepoIndex);
 
-        int isRemoved;
-        fscanf(file, "%d", &isRemoved);
-        item.isRemoved = (bool) isRemoved;
+        item.currentRepository = getRepositoryByIndex(currentRepoIndex);
+        // Load StorageInfo linked list for each item
+        int numStorageInfo;
+        fscanf(file, "%d", &numStorageInfo);
+        for (int j = 0; j < numStorageInfo; ++j) {
+            struct StorageInfo storageInfo = {};
+            int repoIndex = 0;
+            fscanf(file, "%d %ld", &repoIndex, &storageInfo.timeIn);
+            storageInfo.repository = getRepositoryByIndex(repoIndex);
+            addStorageInfo(&item, storageInfo);
+        }
 
-        int repoIndex = 0;
-        fscanf(file, "%d", &repoIndex);
-        addToRepository(&item, getRepositoryByIndex(repoIndex), timeStamp);
-
+        addToRepository(&item, getRepositoryByIndex(item.currentRepository->index), -1);
         addItem(item);
     }
 
     // Loading tokens
     fscanf(file, "%d\n", &numTokens);
     for (int i = 0; i < numTokens; ++i) {
-        fscanf(file, "%ud\n", &tokens[currentTokenIndex++]);
+        fscanf(file, "%ud", &tokens[currentTokenIndex++]);
     }
 
     fclose(file);
@@ -626,7 +643,7 @@ void printStorageInfoList(struct StorageInfoNode *storageInfoNode) {
     while (storageInfoNode != NULL) {
         printf("Repository: %s, Time In: %lld\n",
                storageInfoNode->storageInfo.repository->name,
-               (long long)storageInfoNode->storageInfo.timeIn);
+               (long long) storageInfoNode->storageInfo.timeIn);
 
         storageInfoNode = storageInfoNode->next;
     }
