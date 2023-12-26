@@ -102,7 +102,7 @@ struct Repository *getRepositoryByIndex(int repositoryIndex);
 
 void pauseProgram();
 
-error_code addToRepository(struct Item *item, struct Repository *repo);
+error_code addToRepository(struct Item *item, struct Repository *repo, time_t time);
 
 error_code removeFromRepository(struct Item *item);
 
@@ -125,5 +125,7 @@ bool verifyToken(const char *text);
 error_code addToken();
 
 void printRepositoryItems(struct Repository *repository);
+
+void printStorageInfoList(struct StorageInfoNode *storageInfoNode);
 
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H

@@ -43,6 +43,11 @@ struct StorageInfo {
     time_t timeIn;
 };
 
+struct StorageInfoNode {
+    struct StorageInfo storageInfo;
+    struct StorageInfoNode *next;
+};
+
 struct Item {
     int index;
     int inventoryIndex;
@@ -53,7 +58,7 @@ struct Item {
     int quantity;
     bool isRemoved;
     struct Repository *currentRepository;
-    struct StorageInfo storageInfo[MAX_STORAGE_INFO_NUM]; // <- todo: should be changed into a linked List ***
+    struct StorageInfoNode *storageInfoList;
     int currentStorageInfoIndex;
 };
 

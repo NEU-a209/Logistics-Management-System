@@ -41,7 +41,7 @@ time_t timeStamp = NON_REALISTIC_TIMESTAMP;
 int main(void) {
     loadData();
 
-    /*
+/*
     printf("1: 登陆\n2: 注册\n输入你的选择: ");
     int operation = 0;
     inputInteger(&operation);
@@ -50,8 +50,7 @@ int main(void) {
         getToken();
         login();
     }
-    puts("");
-    */
+    puts("");*/
 
 
     int currentMenuIndex = MAIN;
@@ -111,8 +110,11 @@ void getToken() {
     srand(time(0));   //防止伪随机数 时间复杂度
     char node[7];     //node[6]='\0';
     char node_[7];
-    char eng[36] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                    'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    char eng[36] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                    'Q', 'R', 'S', 'T','U', 'V', 'W', 'X',
+                    'Y', 'Z', '0', '1', '2', '3', '4', '5',
+                    '6', '7', '8', '9'};
     for (int i = 0; i < 6; i++) {
         num = rand() % 34;
         node[i] = eng[num];  //验证码
@@ -136,10 +138,15 @@ bool verify() {
     srand(time(0));   //防止伪随机数 时间复杂度
     char node[7];     //node[6]='\0';
     char node_[7];
-    char eng[62] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-                    'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
-                    'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
-                    'y', 'z'};
+    char eng[62] = {'A', 'B', 'C', 'D', 'E', 'F', 'G',
+                    'H', 'I', 'J', 'K', 'L', 'M', 'N',
+                    'O', 'P', 'Q', 'R', 'S', 'T','U',
+                    'V', 'W', 'X', 'Y', 'Z', '0', '1',
+                    '2', '3', '4', '5', '6', '7', '8',
+                    '9', 'a', 'b', 'c', 'd','e', 'f',
+                    'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                    'n', 'o', 'p', 'q', 'r', 's', 't',
+                    'u', 'v', 'w', 'x','y', 'z'};
     for (int i = 0; i < 6; i++) {
         num = rand() % 60;
         node[i] = eng[num];  //验证码
@@ -245,12 +252,12 @@ int itemMenu() {
             printf("Enter the target repository index: ");
             inputInteger(&repositoryIndex);
             puts("");
-            addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex));
+            addToRepository(&items[itemIndex], getRepositoryByIndex(repositoryIndex), timeStamp);
             return ITEM;
         case RETURN_FROM_ITEM:
             return MAIN;
         default:
-            return MAIN;
+            return ITEM;
     }
 }
 
@@ -295,7 +302,12 @@ int repositoryMenu() {
 }
 
 int orderMenu() {
+    printf("输入物品id以查询物流信息: ");
+    int itemID;
+    inputInteger(&itemID);
+    printStorageInfoList(getItemByIndex(itemID)->storageInfoList);
     pauseProgram();
+    return MAIN;
 }
 
 void printMainMenu() {
@@ -445,7 +457,7 @@ void pauseProgram() {
     getchar();
 }
 
-error_code addToRepository(struct Item *item, struct Repository *repo) {
+error_code addToRepository(struct Item *item, struct Repository *repo, time_t time) {
     if (item->isRemoved || repo->isRemoved) return ERR_NOT_FOUND;
 
     if (item->currentRepository != NULL) {
@@ -562,7 +574,7 @@ error_code loadData() {
 
         int repoIndex = 0;
         fscanf(file, "%d", &repoIndex);
-        addToRepository(&item, getRepositoryByIndex(repoIndex));
+        addToRepository(&item, getRepositoryByIndex(repoIndex), timeStamp);
 
         addItem(item);
     }
@@ -599,11 +611,23 @@ unsigned int customHash(const char *text) {
     return hash;
 }
 
-
 // todo: add titles and stuff
 void printRepositoryItems(struct Repository *repository) {
     for (int i = 0; i < repository->currentInventoryIndex; ++i) {
         if (repository->inventory[i] != NULL)
             printItem(repository->inventory[i]);
+    }
+}
+
+// Function to print the linked list of StorageInfo nodes
+void printStorageInfoList(struct StorageInfoNode *storageInfoNode) {
+    printf("Storage Information:\n");
+
+    while (storageInfoNode != NULL) {
+        printf("Repository: %s, Time In: %lld\n",
+               storageInfoNode->storageInfo.repository->name,
+               (long long)storageInfoNode->storageInfo.timeIn);
+
+        storageInfoNode = storageInfoNode->next;
     }
 }

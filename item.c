@@ -15,6 +15,7 @@
 #include "repository.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 
 struct Item constructItem(time_t timeCreated) {
@@ -51,8 +52,34 @@ void printItem(struct Item *item) {
 
 }
 
+// Update the addStorageInfo function to add a new node to the linked list
 error_code addStorageInfo(struct Item *item, struct StorageInfo storageInfo) {
-    if (item->currentStorageInfoIndex == MAX_STORAGE_INFO_NUM) return ERR_DATA_OVERFLOW;
-    item->storageInfo[item->currentStorageInfoIndex++] = storageInfo;
+    // Create a new node
+    struct StorageInfoNode *newNode = malloc(sizeof(struct StorageInfoNode));
+    if (newNode == NULL) {
+        // Handle memory allocation error
+        return ERR_UNABLE_TO_HANDLE;
+    }
+
+    // Initialize the new node
+    newNode->storageInfo = storageInfo;
+    newNode->next = NULL;
+
+    // Add the new node to the linked list
+    if (item->storageInfoList == NULL) {
+        // If the list is empty, set the new node as the head
+        item->storageInfoList = newNode;
+    } else {
+        // Otherwise, find the last node and append the new node
+        struct StorageInfoNode *lastNode = item->storageInfoList;
+        while (lastNode->next != NULL) {
+            lastNode = lastNode->next;
+        }
+        lastNode->next = newNode;
+    }
+
+    // Increment the storage info index (optional, if needed)
+    item->currentStorageInfoIndex++;
+
     return SUCCEEDED;
 }
