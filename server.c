@@ -41,7 +41,7 @@ time_t timeStamp = NON_REALISTIC_TIMESTAMP;
 int main(void) {
     loadData();
 
-/*
+
     printf("1: 登陆\n2: 注册\n输入你的选择: ");
     int operation = 0;
     inputInteger(&operation);
@@ -50,7 +50,7 @@ int main(void) {
         getToken();
         login();
     }
-    puts("");*/
+    puts("");
 
 
     int currentMenuIndex = MAIN;
@@ -123,7 +123,7 @@ void getToken() {
 
     printf("你的Token为:%s    ", node);
 
-    printf("请输入验你的Token:");
+    printf("请输入你的Token:");
     scanf("%s", node_);
     if (strcmp(node, node_) == 0) {
         printf("注册成功，请记住你的Token!!!\n");
@@ -202,11 +202,7 @@ int mainMenu() {
             return ORDER;
         case EXIT_PROGRAM:
             return EXIT;
-        case -1:
-            saveData();
-            return MAIN;
-        case -2:
-            loadData();
+        default:
             return MAIN;
     }
 }
@@ -256,6 +252,9 @@ int itemMenu() {
                             getRepositoryByIndex(repositoryIndex),
                             timeStamp);
 
+            return ITEM;
+        case -1:
+            quickSort(0, currentItemIndex - 1, compareItemName);
             return ITEM;
         case RETURN_FROM_ITEM:
             return MAIN;
@@ -514,21 +513,28 @@ error_code saveData() {
     fprintf(file, "%d\n", currentRepositoryIndex);
     for (int i = 0; i < currentRepositoryIndex; ++i) {
         struct Repository *pRepository = getRepositoryByIndex(i);
-        fprintf(file, "%s %ld %d\n", pRepository->name, pRepository->timeCreated, (int) pRepository->isRemoved);
+        fprintf(file, "%s %ld %d\n",
+                pRepository->name,
+                pRepository->timeCreated,
+                (int) pRepository->isRemoved);
     }
 
     // Saving items
     fprintf(file, "%d\n", currentItemIndex);
     for (int i = 0; i < currentItemIndex; ++i) {
         struct Item *pItem = getItemByIndex(i);
-        fprintf(file, "%s %d %d %d %d %d\n", pItem->name, pItem->type, pItem->price, pItem->quantity, pItem->isRemoved,
+        fprintf(file, "%s %d %d %d %d %d\n",
+                pItem->name, pItem->type,
+                pItem->price, pItem->quantity,
+                pItem->isRemoved,
                 pItem->currentRepository->index);
 
         // Save StorageInfo linked list for each item
         fprintf(file, "%d\n", pItem->currentStorageInfoIndex);
         struct StorageInfoNode *storageInfoNode = pItem->storageInfoList;
         while (storageInfoNode != NULL) {
-            fprintf(file, "%d %ld ", storageInfoNode->storageInfo.repository->index,
+            fprintf(file, "%d %ld ",
+                    storageInfoNode->storageInfo.repository->index,
                     storageInfoNode->storageInfo.timeIn);
             storageInfoNode = storageInfoNode->next;
         }
@@ -577,7 +583,10 @@ error_code loadData() {
     for (int i = 0; i < numItems; ++i) {
         struct Item item = {};
         int currentRepoIndex = 0;
-        fscanf(file, "%s %d %d %d %d %d", item.name, &item.type, &item.price, &item.quantity, &item.isRemoved,
+        fscanf(file, "%s %d %d %d %d %d",
+               item.name, &item.type,
+               &item.price, &item.quantity,
+               &item.isRemoved,
                &currentRepoIndex);
 
         item.currentRepository = getRepositoryByIndex(currentRepoIndex);
@@ -592,8 +601,10 @@ error_code loadData() {
             addStorageInfo(&item, storageInfo);
         }
 
-        addToRepository(&item, getRepositoryByIndex(item.currentRepository->index), -1);
-        addItem(item);
+        addToRepository(&item,
+                        getRepositoryByIndex(item.currentRepository->index),
+                        -1);
+        item.index = addItem(item);
     }
 
     // Loading tokens
@@ -646,5 +657,57 @@ void printStorageInfoList(struct StorageInfoNode *storageInfoNode) {
                (long long) storageInfoNode->storageInfo.timeIn);
 
         storageInfoNode = storageInfoNode->next;
+    }
+}
+
+int compareItemIndex(const void *a, const void *b) {
+    return ((struct Item*)a)->index - ((struct Item*)b)->index;
+}
+
+int compareItemName(const void *a, const void *b) {
+    const char *pa = ((struct Item*)a)->name;
+    const char *pb = ((struct Item*)b)->name;
+
+    while (true) {
+        if (*pa == '\0') return (*pb == '\0') ? 0 : -1;
+        else if (*pb == '\0') return 1;
+        else if (*pa > *pb) return 1;
+        else if (*pa < *pb) return -1;
+
+        ++pa;
+        ++pb;
+    }
+}
+
+int partition(int left, int right, int (*cmp)(const void *, const void *)) {
+    struct Item pivot = items[right]; // 选择数组最后一个元素作为枢纽元素
+    int i = left - 1;
+
+    for (int j = left; j < right; j++) {
+        if (cmp(&items[j], &pivot) <= 0) {
+            i++;
+            // 交换元素
+            struct Item temp = items[i];
+            items[i] = items[j];
+            items[j] = temp;
+        }
+    }
+
+    // 将枢纽元素放到正确的位置
+    struct Item temp = items[i + 1];
+    items[i + 1] = items[right];
+    items[right] = temp;
+
+    return i + 1;
+}
+
+void quickSort(int left, int right, int (*cmp)(const void *, const void *)) {
+    if (left < right) {
+        // 分割数组，并获取分割点
+        int partitionIndex = partition(left, right, cmp);
+
+        // 递归排序左边和右边的子数组
+        quickSort(left, partitionIndex - 1, cmp);
+        quickSort(partitionIndex + 1, right, cmp);
     }
 }

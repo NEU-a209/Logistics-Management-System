@@ -128,4 +128,12 @@ void printRepositoryItems(struct Repository *repository);
 
 void printStorageInfoList(struct StorageInfoNode *storageInfoNode);
 
+int compareItemIndex(const void *a, const void *b);
+
+int compareItemName(const void *a, const void *b);
+
+void quickSort(int left, int right, int (*cmp)(const void*, const void*));
+
+int partition(int left, int right, int (*cmp)(const void*, const void*));
+
 #endif //LOGISTICS_MANAGEMENT_SYSTEM_SERVER_H

@@ -15,14 +15,14 @@
 
 #include "globalDeclarations.h"
 
-struct DictionaryTree {
+struct DictTree {
     struct Item *item;
-    struct DictionaryTree *subTrees[38];
+    struct DictTree *subTrees[38];
 };
 
-error_code addItemToDictionaryTree(struct Item *item, struct DictionaryTree *dictionaryTree);
+error_code addItemToDictionaryTree(struct Item *item, struct DictTree *dictTree);
 
-struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *dictionaryTree);
+struct DictTree *getTreeByString(const char *name, struct DictTree *dictionaryTree);
 
 int asciiToDictionaryTreeIndex(char ascii);
 

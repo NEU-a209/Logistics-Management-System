@@ -17,13 +17,13 @@
 #include "ctype.h"
 #include "stdlib.h"
 
-error_code addItemToDictionaryTree(struct Item *item, struct DictionaryTree *dictionaryTree) {
+error_code addItemToDictionaryTree(struct Item *item, struct DictTree *dictTree) {
     for (int i = 0; i < MAX_ITEM_NAME_LENGTH && item->name[i] != '\0'; ++i) {
         int index = asciiToDictionaryTreeIndex(item->name[i]);
-        if (dictionaryTree->subTrees[index]) {
-            dictionaryTree = dictionaryTree->subTrees[index];
+        if (dictTree->subTrees[index]) {
+            dictTree = dictTree->subTrees[index];
         } else {
-            struct DictionaryTree *newSubTree = malloc(sizeof(struct DictionaryTree));
+            struct DictTree *newSubTree = malloc(sizeof(struct DictTree));
             if (!newSubTree) {
                 return ERR_UNABLE_TO_HANDLE;
             }
@@ -31,19 +31,19 @@ error_code addItemToDictionaryTree(struct Item *item, struct DictionaryTree *dic
             for (int j = 0; j < 38; ++j) {
                 newSubTree->subTrees[j] = NULL;
             }
-            dictionaryTree->subTrees[index] = newSubTree;
-            dictionaryTree = newSubTree;
+            dictTree->subTrees[index] = newSubTree;
+            dictTree = newSubTree;
         }
     }
-    dictionaryTree->item = item;
+    dictTree->item = item;
     return SUCCEEDED;
 }
 
-struct DictionaryTree *getTreeByString(const char *name, struct DictionaryTree *dictionaryTree) {
+struct DictTree *getTreeByString(const char *name, struct DictTree *dictionaryTree) {
     for (int i = 0; i < MAX_ITEM_NAME_LENGTH && name[i] != '\0'; ++i) {
         int index = asciiToDictionaryTreeIndex(name[i]);
         if (dictionaryTree->subTrees[index] == NULL)
-            return (struct DictionaryTree *) NULL;
+            return (struct DictTree *) NULL;
         dictionaryTree = dictionaryTree->subTrees[index];
     }
     return dictionaryTree;
